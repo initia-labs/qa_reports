@@ -1,0 +1,84 @@
+name: AI Single Report Analysis
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'reports/**/metadata.json'
+
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project name'
+        required: true
+      timestamp:
+        description: 'Report timestamp (e.g., 20260208-143020)'
+        required: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Detect New Report
+        id: detect
+        if: github.event_name == 'push'
+        run: |
+          # Find the newly added metadata.json file
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep 'reports/.*/.*/.*/metadata.json' || true)
+
+          if [ -n "$CHANGED_FILES" ]; then
+            # Extract project and timestamp from path
+            # Format: reports/{project}/{timestamp}/metadata.json
+            PROJECT=$(echo "$CHANGED_FILES" | head -1 | cut -d'/' -f2)
+            TIMESTAMP=$(echo "$CHANGED_FILES" | head -1 | cut -d'/' -f3)
+
+            echo "project=$PROJECT" >> $GITHUB_OUTPUT
+            echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+            echo "found=true" >> $GITHUB_OUTPUT
+
+            echo "Detected new report: $PROJECT / $TIMESTAMP"
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "No new report detected"
+          fi
+
+      - name: Run AI Analysis
+        if: steps.detect.outputs.found == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          PROJECT="${{ github.event.inputs.project || steps.detect.outputs.project }}"
+          TIMESTAMP="${{ github.event.inputs.timestamp || steps.detect.outputs.timestamp }}"
+
+          echo "Analyzing report: $PROJECT / $TIMESTAMP"
+
+          node .github/scripts/ai-analyzer.js \
+            --project "$PROJECT" \
+            --timestamp "$TIMESTAMP" \
+            --type single
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Commit Analysis
+        if: steps.detect.outputs.found == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          PROJECT="${{ github.event.inputs.project || steps.detect.outputs.project }}"
+
+          git config user.name "QA Bot"
+          git config user.email "qa@initia.com"
+          git add analysis/$PROJECT/
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add AI analysis for $PROJECT"
+            git push
+          fi

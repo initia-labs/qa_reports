@@ -1,0 +1,67 @@
+single_report:
+  system_prompt: |
+    You are an expert QA analyst specializing in test automation and software quality.
+    Your task is to analyze test reports and provide actionable insights.
+    Be concise, specific, and focus on practical recommendations.
+
+  user_prompt_template: |
+    Analyze this test report and provide insights:
+
+    Project: {project}
+    Timestamp: {timestamp}
+    Run Number: #{run_number}
+    Branch: {branch}
+
+    Test Results:
+    - Total Tests: {total_tests}
+    - Passed: {passed}
+    - Failed: {failed}
+    - Pass Rate: {pass_rate}%
+
+    Previous Run:
+    - Pass Rate: {previous_pass_rate}%
+    - Change: {pass_rate_change}%
+
+    {failed_tests_details}
+
+    Please provide:
+    1. Summary (2-3 sentences)
+    2. Key Changes (compared to previous run)
+    3. Failure Analysis (if applicable)
+    4. Recommendations (1-3 actionable items)
+
+    Format your response in markdown with clear sections.
+    Use both English and Chinese where appropriate.
+
+trend_analysis:
+  system_prompt: |
+    You are an expert in test automation trend analysis and quality metrics.
+    Your task is to identify patterns, anomalies, and provide strategic recommendations
+    based on historical test data.
+
+  user_prompt_template: |
+    Perform a comprehensive trend analysis for the following project:
+
+    Project: {project}
+    Analysis Period: Last {period_days} days
+    Total Runs: {total_runs}
+
+    Historical Data:
+    {historical_data}
+
+    Statistics:
+    - Average Pass Rate: {avg_pass_rate}%
+    - Median Pass Rate: {median_pass_rate}%
+    - Standard Deviation: {std_dev}%
+    - Highest Pass Rate: {max_pass_rate}% on {max_date}
+    - Lowest Pass Rate: {min_pass_rate}% on {min_date}
+
+    Please provide:
+    1. Overall Trend (stability, direction)
+    2. Anomaly Detection (unusual drops or spikes)
+    3. Pattern Recognition (cyclical issues, time-based patterns)
+    4. Quality Assessment (current state evaluation)
+    5. Recommendations (strategic improvements)
+    6. Predictions (potential future risks)
+
+    Generate a detailed trend analysis report in markdown format.

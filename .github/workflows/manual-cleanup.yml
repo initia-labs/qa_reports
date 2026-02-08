@@ -1,0 +1,86 @@
+name: Delete Invalid Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project name'
+        required: true
+      timestamp:
+        description: 'Report timestamp (e.g., 20260208-143020)'
+        required: true
+      reason:
+        description: 'Reason for deletion'
+        required: true
+
+jobs:
+  delete-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Input
+        run: |
+          PROJECT="${{ github.event.inputs.project }}"
+          TIMESTAMP="${{ github.event.inputs.timestamp }}"
+
+          if [ ! -d "reports/$PROJECT/$TIMESTAMP" ]; then
+            echo "Error: Report not found at reports/$PROJECT/$TIMESTAMP"
+            exit 1
+          fi
+
+          echo "Found report to delete: reports/$PROJECT/$TIMESTAMP"
+
+      - name: Archive Report Info
+        run: |
+          PROJECT="${{ github.event.inputs.project }}"
+          TIMESTAMP="${{ github.event.inputs.timestamp }}"
+
+          # Save metadata before deletion
+          mkdir -p .deleted-reports
+          echo "Project: $PROJECT" >> .deleted-reports/deletion-log.txt
+          echo "Timestamp: $TIMESTAMP" >> .deleted-reports/deletion-log.txt
+          echo "Reason: ${{ github.event.inputs.reason }}" >> .deleted-reports/deletion-log.txt
+          echo "Deleted by: ${{ github.actor }}" >> .deleted-reports/deletion-log.txt
+          echo "Deleted at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> .deleted-reports/deletion-log.txt
+          echo "---" >> .deleted-reports/deletion-log.txt
+
+          # Copy metadata if exists
+          if [ -f "reports/$PROJECT/$TIMESTAMP/metadata.json" ]; then
+            cat "reports/$PROJECT/$TIMESTAMP/metadata.json" >> .deleted-reports/deletion-log.txt
+          fi
+
+          echo "---" >> .deleted-reports/deletion-log.txt
+          echo "" >> .deleted-reports/deletion-log.txt
+
+      - name: Delete Report
+        run: |
+          PROJECT="${{ github.event.inputs.project }}"
+          TIMESTAMP="${{ github.event.inputs.timestamp }}"
+
+          rm -rf "reports/$PROJECT/$TIMESTAMP"
+          echo "Deleted: reports/$PROJECT/$TIMESTAMP"
+
+      - name: Commit Changes
+        run: |
+          PROJECT="${{ github.event.inputs.project }}"
+          TIMESTAMP="${{ github.event.inputs.timestamp }}"
+
+          git config user.name "QA Bot"
+          git config user.email "qa@initia.com"
+          git add .
+          git commit -m "Delete invalid report: $PROJECT/$TIMESTAMP
+
+Reason: ${{ github.event.inputs.reason }}
+Deleted by: ${{ github.actor }}"
+          git push
+
+      - name: Summary
+        run: |
+          echo "Report Deleted Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- Project: ${{ github.event.inputs.project }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Timestamp: ${{ github.event.inputs.timestamp }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Reason: ${{ github.event.inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Deleted by: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY

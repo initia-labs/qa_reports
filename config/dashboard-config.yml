@@ -1,0 +1,39 @@
+site:
+  title: "QA Test Reports Dashboard"
+  description: "Comprehensive testing reports for Initia ecosystem"
+  update_interval: 300  # seconds
+
+# Project configurations (optional - auto-discovered from reports/)
+# Customize display names, icons, and colors
+projects:
+  ausd0:
+    display_name: "AUSD0 Tests"
+    color: "#9333ea"
+
+  bridge:
+    display_name: "Bridge Tests"
+    color: "#28a745"
+
+  dex-clamm:
+    display_name: "DEX CLAMM Tests"
+    color: "#00bcd4"
+
+  strat:
+    display_name: "Strat Tests"
+    color: "#ffc107"
+
+  initia-l1:
+    display_name: "Initia L1 Tests"
+    color: "#667eea"
+
+# Report retention settings
+retention:
+  max_reports_per_project: 100
+  auto_delete_after_days: 90
+  keep_failed_reports: true  # Always keep failed reports
+
+# AI analysis settings
+ai:
+  single_report_analysis: true
+  trend_analysis_interval: "weekly"  # daily, weekly, monthly
+  trend_analysis_period_days: 30

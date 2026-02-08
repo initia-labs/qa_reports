@@ -1,0 +1,22 @@
+{
+  "name": "qa-reports",
+  "version": "1.0.0",
+  "description": "QA Test Reports Dashboard with AI-powered analysis",
+  "main": "index.js",
+  "scripts": {
+    "generate": "node .github/scripts/generate-dashboard.js",
+    "analyze": "node .github/scripts/ai-analyzer.js"
+  },
+  "keywords": [
+    "qa",
+    "testing",
+    "reports",
+    "dashboard",
+    "ai-analysis"
+  ],
+  "author": "Initia Labs",
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
