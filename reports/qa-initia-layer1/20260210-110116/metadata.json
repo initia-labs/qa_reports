@@ -1,0 +1,18 @@
+{
+  "project": "qa-initia-layer1",
+  "timestamp": "20260210-110116",
+  "test_scope": "regression",
+  "initia_version": "v1.2.3",
+  "status": "failed",
+  "summary": {
+    "total": 17,
+    "passed": 14,
+    "failed": 3,
+    "skipped": 0,
+    "errors": 0
+  },
+  "run_url": "https://github.com/initia-labs/qa-initia-layer1/actions/runs/21862227595",
+  "commit": "b9ba39340bc4c8f269679e00bd7ce2b0a665c477",
+  "branch": "main",
+  "triggered_by": "jackmoriso"
+}
