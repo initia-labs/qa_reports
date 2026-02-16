@@ -1,0 +1,18 @@
+{
+  "project": "qa-initia-layer1",
+  "timestamp": "20260216-004323",
+  "test_scope": "all",
+  "initia_version": "v1.3.1",
+  "status": "failed",
+  "summary": {
+    "total": 360,
+    "passed": 330,
+    "failed": 28,
+    "skipped": 2,
+    "errors": 0
+  },
+  "run_url": "https://github.com/initia-labs/qa-initia-layer1/actions/runs/22046294028",
+  "commit": "b9ba39340bc4c8f269679e00bd7ce2b0a665c477",
+  "branch": "main",
+  "triggered_by": "github-actions[bot]"
+}
